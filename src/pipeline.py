@@ -4,7 +4,8 @@ import logging
 import pandas as pd
 from sklearn.pipeline import Pipeline
 
-from src.initial_transformer import data_transformer
+from src.initial_transformer import DataTransformer
+from src.save_results import SaveResults
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
@@ -18,18 +19,24 @@ class MLReport():
     """
     Main Machine Learn class
     """
-    def __init__(self, initial_transformer: data_transformer, path: str) -> None:
+    def __init__(self,
+                 initial_transformer: DataTransformer,
+                 results: SaveResults
+                 ) -> None:
         """
         Constructor for Machine Learning jobs
+
+        :param initial_transformer: Class to get data from source and transforms it
+        :param results: Class to save results
         """
         self._logger = logging.getLogger(__name__)
-        self._path = path
         self._transformer = initial_transformer
+        self._results = results
         self._estimators = [{'name':'random_forest', 'obj' : RandomForestClassifier()},
                             {'name': 'xgboost', 'obj': XGBClassifier()}]
         self._pipe_pre = Pipeline([('pre_sc_std', StandardScaler())])
     
-    def spliter(self, data_frame: pd.DataFrame, estimator_name: str):
+    def spliter(self, data_frame: pd.DataFrame, estimator_name: str) -> tuple[pd.DataFrame]:
         """
         Splits data
 
@@ -63,7 +70,7 @@ class MLReport():
         Calls funcions to run the pipelines
         """
         # Getting data
-        data_frame = self._transformer(self._path)
+        data_frame = self._transformer.data_transformer()
         self._logger.info('Data taken')
         
         for estimator in self._estimators:
@@ -83,3 +90,11 @@ class MLReport():
             # Report
             print('Classification report:', estimator['name'])
             print(classification_report(y_test, y_pred))
+
+            #Saving results
+            cr = classification_report(y_test, y_pred, output_dict=True)
+            df_cr = pd.DataFrame(cr).transpose()
+            self._results.cr_writer(estimator['name'], df_cr)
+            self._results.model_writer(estimator['name'], pipe_estimator)
+        
+        return True
