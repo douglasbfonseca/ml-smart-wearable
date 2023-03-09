@@ -2,45 +2,57 @@
 
 import pandas as pd
 
-def data_transformer(path: str) -> pd.DataFrame:
+class DataTransformer():
     """
-    Gets data from source and transforms it
+    Class for get data from source and transforms it
     """
-    #Getting data
-    columns = ['individuo', 'atividade', 'timestamp', 'a_x', 'a_y', 'a_z']
-    data_frame = pd.read_csv(path, sep=',', header=None, on_bad_lines='skip')
-    
-    #Filling NaN values with immediately preceding value
-    data_frame = data_frame.fillna(method='backfill')
+    def __init__(self, path: str) -> None:
+        """
+        Constructor of data transformer
 
-    #Applying columns names
-    data_frame.columns = columns
+        :param path: path of the data
+        """
+        self._path = path
 
-    #Converting time to seconds
-    data_frame['timestamp'] = data_frame['timestamp'].apply(lambda x: x/1e9)
+    def data_transformer(self) -> pd.DataFrame:
+        """
+        Gets data from source and transforms it
+        """
+        #Getting data
+        columns = ['individuo', 'atividade', 'timestamp', 'a_x', 'a_y', 'a_z']
+        data_frame = pd.read_csv(self._path, sep=',', header=None, on_bad_lines='skip')
+        
+        #Filling NaN values with immediately preceding value
+        data_frame = data_frame.fillna(method='backfill')
 
-    #Removing ';' and coverting a_z to float64
-    data_frame['a_z'] = data_frame['a_z'].apply(lambda x: float(x.replace(';', '')) if type(x) == str else x)
+        #Applying columns names
+        data_frame.columns = columns
 
-    #Sorting and reseting index
-    data_frame = data_frame.sort_values(by=['individuo','timestamp'])
-    data_frame = data_frame.reset_index(drop=True)
+        #Converting time to seconds
+        data_frame['timestamp'] = data_frame['timestamp'].apply(lambda x: x/1e9)
 
-    #To get a 3 seconds window with 20Hz frequency, we need 60 observartions
-    #Using moving average
-    data_frame['ma_a_x'] = data_frame['a_x'].rolling(60).mean()
-    data_frame['ma_a_y'] = data_frame['a_y'].rolling(60).mean()
-    data_frame['ma_a_z'] = data_frame['a_z'].rolling(60).mean()
+        #Removing ';' and coverting a_z to float64
+        data_frame['a_z'] = data_frame['a_z'].apply(lambda x: float(x.replace(';', '')) if type(x) == str else x)
 
-    #Dropping unneeded columns
-    data_frame = data_frame.drop(columns=['a_x', 'a_y', 'a_z'])
+        #Sorting and reseting index
+        data_frame = data_frame.sort_values(by=['individuo','timestamp'])
+        data_frame = data_frame.reset_index(drop=True)
 
-    #Dropping NaN values after moving average use
-    data_frame = data_frame[59:].reset_index(drop=True)
+        #To get a 3 seconds window with 20Hz frequency, we need 60 observartions
+        #Using moving average
+        data_frame['ma_a_x'] = data_frame['a_x'].rolling(60).mean()
+        data_frame['ma_a_y'] = data_frame['a_y'].rolling(60).mean()
+        data_frame['ma_a_z'] = data_frame['a_z'].rolling(60).mean()
 
-    #Overlap (0 -> no overlap / 1 -> 100% overlap)
-    overlap = 0.75
-    overlap_param = int(60 - (60 * overlap))
-    data_frame = data_frame[(data_frame.index) % overlap_param == 0]
+        #Dropping unneeded columns
+        data_frame = data_frame.drop(columns=['a_x', 'a_y', 'a_z'])
 
-    return data_frame
+        #Dropping NaN values after moving average use
+        data_frame = data_frame[59:].reset_index(drop=True)
+
+        #Overlap (0 -> no overlap / 1 -> 100% overlap)
+        overlap = 0.75
+        overlap_param = int(60 - (60 * overlap))
+        data_frame = data_frame[(data_frame.index) % overlap_param == 0]
+
+        return data_frame

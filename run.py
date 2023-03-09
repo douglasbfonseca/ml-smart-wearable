@@ -4,7 +4,8 @@ import logging.config
 
 import yaml
 
-from src.initial_transformer import data_transformer
+from src.initial_transformer import DataTransformer
+from src.save_results import SaveResults
 from src.pipeline import MLReport
 
 def main():
@@ -23,16 +24,20 @@ def main():
     logging.config.dictConfig(log_config)
     logger = logging.getLogger(__name__)
 
-    # Configure data transformer
-    initial_transformer = data_transformer
-
     # Data path
     path = config['path']
 
+    # Configure data transformer
+    initial_transformer = DataTransformer(path)
+
+    # Configure save results
+    results = SaveResults()
+
     logger.info('Job started')
     ml_report = MLReport(initial_transformer,
-                         path)
+                         results)
     ml_report.run_pipeline()
+    logger.info('Job finished')
     
 
 if __name__ == '__main__':
