@@ -1,0 +1,19 @@
+# Configuration file
+
+path: 'data/coleta.txt' 
+
+
+
+logging:
+  version: 1
+  formatters: 
+    smartwearable:
+      format: "Smart Wearable Report - %(asctime)s - %(levelname)s - %(message)s"
+  handlers:
+    console:
+      class: logging.StreamHandler
+      formatter: smartwearable
+      level: DEBUG
+  root:
+    level: DEBUG
+    handlers: [console]
