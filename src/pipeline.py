@@ -1,18 +1,19 @@
 """pipeline"""
 import logging
+import time
 
 import pandas as pd
-from sklearn.pipeline import Pipeline
 
 from src.initial_transformer import DataTransformer
 from src.save_results import SaveResults
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
 
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
 
-from sklearn.metrics import classification_report
 
 
 class MLReport():
@@ -61,7 +62,7 @@ class MLReport():
                            'Upstairs': 4,
                            'Walking': 5})
 
-        X_train, X_test, y_train, y_test = train_test_split(X, y, random_state = 42, stratify = y)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, stratify = y)
 
         return X_train, X_test, y_train, y_test
 
@@ -82,12 +83,16 @@ class MLReport():
                                        ('estimator', estimator['obj'])])
             
             # Fitting
+            start_time = time.time()
             pipe_estimator.fit(X_train, y_train)
+            end_time = time.time()
+            total_time = round(end_time - start_time, 2)
             
             # Predict
             y_pred = pipe_estimator.predict(X_test)
 
             # Report
+            print('Total fitting time: ', total_time, 'seconds')
             print('Classification report:', estimator['name'])
             print(classification_report(y_test, y_pred))
 

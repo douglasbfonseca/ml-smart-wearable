@@ -6,13 +6,15 @@ class DataTransformer():
     """
     Class for get data from source and transforms it
     """
-    def __init__(self, path: str) -> None:
+    def __init__(self, path: str, overlap: float, window_param: int) -> None:
         """
         Constructor of data transformer
 
         :param path: path of the data
         """
         self._path = path
+        self._overlap = overlap
+        self._window_param = window_param
 
     def data_transformer(self) -> pd.DataFrame:
         """
@@ -40,9 +42,9 @@ class DataTransformer():
 
         #To get a 3 seconds window with 20Hz frequency, we need 60 observartions
         #Using moving average
-        data_frame['ma_a_x'] = data_frame['a_x'].rolling(60).mean()
-        data_frame['ma_a_y'] = data_frame['a_y'].rolling(60).mean()
-        data_frame['ma_a_z'] = data_frame['a_z'].rolling(60).mean()
+        data_frame['ma_a_x'] = data_frame['a_x'].rolling(self._window_param).mean()
+        data_frame['ma_a_y'] = data_frame['a_y'].rolling(self._window_param).mean()
+        data_frame['ma_a_z'] = data_frame['a_z'].rolling(self._window_param).mean()
 
         #Dropping unneeded columns
         data_frame = data_frame.drop(columns=['a_x', 'a_y', 'a_z'])
@@ -51,8 +53,7 @@ class DataTransformer():
         data_frame = data_frame[59:].reset_index(drop=True)
 
         #Overlap (0 -> no overlap / 1 -> 100% overlap)
-        overlap = 0.75
-        overlap_param = int(60 - (60 * overlap))
+        overlap_param = int(60 - (60 * self._overlap))
         data_frame = data_frame[(data_frame.index) % overlap_param == 0]
 
         return data_frame
