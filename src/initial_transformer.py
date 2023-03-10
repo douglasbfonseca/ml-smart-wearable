@@ -19,6 +19,9 @@ class DataTransformer():
     def data_transformer(self) -> pd.DataFrame:
         """
         Gets data from source and transforms it
+
+        returns:
+            Pandas DataFrame
         """
         #Getting data
         columns = ['individuo', 'atividade', 'timestamp', 'a_x', 'a_y', 'a_z']
