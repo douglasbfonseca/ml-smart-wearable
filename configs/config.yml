@@ -1,8 +1,8 @@
 # Configuration file
 
 path: 'data/coleta.txt' 
-
-
+overlap: 0.75
+window_param: 60
 
 logging:
   version: 1
