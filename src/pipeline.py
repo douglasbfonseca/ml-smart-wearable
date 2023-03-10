@@ -66,7 +66,7 @@ class MLReport():
 
         return X_train, X_test, y_train, y_test
 
-    def run_pipeline(self):
+    def run_pipeline(self) -> None:
         """
         Calls funcions to run the pipelines
         """

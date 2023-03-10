@@ -13,7 +13,7 @@ class SaveResults():
         Constructor of save results
         """
 
-    def cr_writer(self, name: str, df_cr: pd.DataFrame):
+    def cr_writer(self, name: str, df_cr: pd.DataFrame) -> None:
         """
         Saves Classification Report
 
@@ -32,7 +32,7 @@ class SaveResults():
         df_cr.to_csv(name_cr)
         return True
 
-    def model_writer(self, name: str, model: any):
+    def model_writer(self, name: str, model: any) -> None:
         """
         Saves Model
 
