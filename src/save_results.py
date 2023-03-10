@@ -6,7 +6,7 @@ import pickle
 
 class SaveResults():
     """
-    Save models and their results
+    Class to save models and their results
     """
     def __init__(self) -> None:
         """
@@ -16,6 +16,9 @@ class SaveResults():
     def cr_writer(self, name: str, df_cr: pd.DataFrame):
         """
         Saves Classification Report
+
+        :param name: the name of the ML model
+        :param df_cr: Pandas DataFrame with classification report output
         """
         if name == 'xgboost':
             df_cr = df_cr.rename(index={'0': 'Downstairs',
@@ -32,6 +35,9 @@ class SaveResults():
     def model_writer(self, name: str, model: any):
         """
         Saves Model
+
+        :param model: the name of the ML model
+        :param model: a ML model trained
         """
         name_pkl = 'data/' + name + '_model.pkl'
         with open(name_pkl, 'wb') as file:

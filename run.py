@@ -37,7 +37,7 @@ def main():
     # Configure save results class
     results = SaveResults()
 
-    #Running the job
+    # Running the job
     logger.info('Job started')
     ml_report = MLReport(initial_transformer,
                          results)
