@@ -1,5 +1,5 @@
 #### ml-smart-wearable
-Smart Wearable Machine Learing Job
+Smart Wearable Machine Learning Job
 
 #### run
 python -m run ...\configs\config.yml
